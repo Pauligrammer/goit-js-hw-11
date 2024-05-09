@@ -2,7 +2,6 @@ import axios from "axios";
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-export let page = 1;
 export const gallery = document.querySelector('div.gallery');
 
 export async function pixabayImg (searchQuery, page) {
