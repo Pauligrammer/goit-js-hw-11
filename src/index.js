@@ -1,8 +1,10 @@
-import { page, photos, gallery, pixabayImg, renderPhotos } from './pixabay-api';
+import { page, gallery, pixabayImg, renderPhotos } from './pixabay-api';
 import Notiflix from 'notiflix';
 
 const form = document.querySelector('form.search-form');
+const fetchImagesBtn = document.querySelector('button.load-more');
 let searchQuery;
+let page = 1;
 
 form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
@@ -12,21 +14,37 @@ form.addEventListener('submit', async (ev) => {
     page = 1;
     try {
         const response = await pixabayImg(searchQuery, page);
-        photos = response.hits;
+        const images = response.hits;
         if (response.totalHits === 0) {
             Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.')
             console.log('Sorry, there are no images matching your search query. Please try again.')
         }
         else if (response.totalHits < 40) {
-            renderPhotos(photos);
+            renderPhotos(images);
             Notiflix.Notify.info("We're sorry, but you've reached the end of search results.")
         }
         else {
-            renderPhotos(photos);
+            renderPhotos(images);
             Notiflix.Notify.success(`Hooray! We found ${response.totalHits} images.`);
         }
     }
     catch (error) {
+        Notiflix.Notify.failure('Error! Please try again.');
+    }
+});
+
+
+fetchImagesBtn.addEventListener("click", async ev => {
+    page += 1;
+  try {
+      const response = await pixabayImg(searchQuery, page);
+      const images = response.hits;
+      const totalHits = response.totalHits
+      renderPhotos(images);
+      if (totalHits > 40) {
+          fetchImagesBtn.classList.remove('hidden');
+      }
+  } catch (error) {
         Notiflix.Notify.failure('Error! Please try again.');
     }
 });
